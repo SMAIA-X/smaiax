@@ -1,0 +1,6 @@
+[submodule "smaiax-backend"]
+	path = smaiax-backend
+	url = https://github.com/SMAIA-X/smaiax-backend
+[submodule "smaiax-frontend"]
+	path = smaiax-frontend
+	url = https://github.com/SMAIA-X/smaiax-frontend
