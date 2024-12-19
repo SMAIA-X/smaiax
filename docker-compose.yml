@@ -1,0 +1,97 @@
+services:
+  smaiax-backend:
+    image: smaiax-backend
+    container_name: "smaiax-backend"
+    restart: always
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      ASPNETCORE_ENVIRONMENT: DockerDevelopment
+    build:
+      context: ./smaiax-backend
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    networks:
+      - smaiax-frontend-network
+      - smaiax-backend-network
+  
+  vault:
+    image: vault:1.13.3
+    container_name: "smaiax-vault"
+    restart: always
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: 'http://0.0.0.0:8200'
+      VAULT_DEV_ROOT_TOKEN_ID: '00000000-0000-0000-0000-000000000000'
+      VAULT_TOKEN: '00000000-0000-0000-0000-000000000000'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault/:/vault/:rwx
+    command:
+      - /bin/sh
+      - -c
+      - |
+        dos2unix /vault/config/entrypoint.sh && \
+        /vault/config/entrypoint.sh
+    networks:
+      - smaiax-backend-network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: "smaiax-backend-db"
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smaiax-db
+    networks:
+      - smaiax-backend-network
+  
+  rabbitmq:
+    image: rabbitmq:4.0.2-management-alpine
+    container_name: smaiax-mqtt-broker
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI port
+      - "1883:1883"  # MQTT port
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      sh -c "rabbitmq-plugins enable rabbitmq_management rabbitmq_mqtt && rabbitmq-server"
+    networks:
+      - smaiax-backend-network
+  
+  smaiax-frontend:
+    image: smaiax-frontend
+    container_name: "smaiax-frontend"
+    restart: always
+    ports:
+      - "8080:8080"
+    build:
+      context: ./smaiax-frontend
+      dockerfile: Dockerfile
+    networks:
+      - smaiax-frontend-network
+    depends_on:
+      - smaiax-backend
+
+networks:
+  smaiax-backend-network:
+    name: "smaiax-backend-network"
+    driver: bridge
+  smaiax-frontend-network:
+    name: "smaiax-frontend-network"
+    driver: bridge
