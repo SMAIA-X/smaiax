@@ -4,3 +4,9 @@
 [submodule "smaiax-frontend"]
 	path = smaiax-frontend
 	url = https://github.com/SMAIA-X/smaiax-frontend
+[submodule "smaiax-connector"]
+	path = smaiax-connector
+	url = https://github.com/SMAIA-X/smaiax-connector
+[submodule "smaiax-data-generator"]
+	path = smaiax-data-generator
+	url = https://github.com/SMAIA-X/smaiax-data-generator

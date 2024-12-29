@@ -1,4 +1,18 @@
 services:
+  smaiax-frontend:
+    image: smaiax-frontend
+    container_name: "smaiax-frontend"
+    restart: always
+    ports:
+      - "8080:8080"
+    build:
+      context: ./smaiax-frontend
+      dockerfile: Dockerfile
+    networks:
+      - smaiax-network
+    depends_on:
+      - smaiax-backend
+
   smaiax-backend:
     image: smaiax-backend
     container_name: "smaiax-backend"
@@ -14,8 +28,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - smaiax-frontend-network
-      - smaiax-backend-network
+      - smaiax-network
   
   vault:
     image: vault:1.13.3
@@ -38,7 +51,7 @@ services:
         dos2unix /vault/config/entrypoint.sh && \
         /vault/config/entrypoint.sh
     networks:
-      - smaiax-backend-network
+      - smaiax-network
     depends_on:
       - postgres
 
@@ -53,7 +66,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: smaiax-db
     networks:
-      - smaiax-backend-network
+      - smaiax-network
   
   rabbitmq:
     image: rabbitmq:4.0.2-management-alpine
@@ -72,26 +85,9 @@ services:
     command: >
       sh -c "rabbitmq-plugins enable rabbitmq_management rabbitmq_mqtt && rabbitmq-server"
     networks:
-      - smaiax-backend-network
-  
-  smaiax-frontend:
-    image: smaiax-frontend
-    container_name: "smaiax-frontend"
-    restart: always
-    ports:
-      - "8080:8080"
-    build:
-      context: ./smaiax-frontend
-      dockerfile: Dockerfile
-    networks:
-      - smaiax-frontend-network
-    depends_on:
-      - smaiax-backend
+      - smaiax-network
 
 networks:
-  smaiax-backend-network:
-    name: "smaiax-backend-network"
-    driver: bridge
-  smaiax-frontend-network:
-    name: "smaiax-frontend-network"
+  smaiax-network:
+    name: "smaiax-network"
     driver: bridge
