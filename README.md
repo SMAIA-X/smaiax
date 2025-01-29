@@ -13,6 +13,12 @@ If you clone the repository without `--recursive` you have to use the following 
 git submodule update --init --recursive
 ```
 
+## How to pull from the repository
+After you cloned the repository and there are new changes you can pull the repository with the following command:
+```
+git pull --recurse-submodules
+```
+
 ## How to update the submodules
 To update the submodules you need to run the following command
 ```
