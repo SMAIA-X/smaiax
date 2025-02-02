@@ -19,6 +19,20 @@ After you cloned the repository and there are new changes you can pull the repos
 git pull --recurse-submodules
 ```
 
+## How to run the project
+With the following commands you can start the whole project:
+```
+docker compose build
+docker compose up -d
+```
+Once all Docker containers are up and running, you can access the frontend at: `http://localhost:8080`.
+The application comes with three predefined users:
+| Name           | Username       | Email                      | Password  |
+|-------------- |--------------|---------------------------|----------|
+| John Doe      | johndoe       | john.doe@example.com      | P@ssw0rd |
+| Jane Doe      | janedoe       | jane.doe@example.com      | P@ssw0rd |
+| Max Mustermann | maxmustermann | max.mustermann@example.com | P@ssw0rd |
+
 ## How to update the submodules
 To update the submodules you need to run the following command
 ```
